@@ -1,0 +1,32 @@
+{
+  "name": "mobius2-config",
+  "version": "1.0.0",
+  "description": "Mobius 2 dashcam configuration file parser",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquilax/mobius2-config.git"
+  },
+  "keywords": [
+    "configuration",
+    "mobius2",
+    "parser"
+  ],
+  "author": {
+    "name": "Evgeniy Vasilev",
+    "email": "aquilax+npm@gmail.com",
+    "url": "http://www.avtobiografia.com/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aquilax/mobius2-config/issues"
+  },
+  "homepage": "https://github.com/aquilax/mobius2-config#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  }
+}
