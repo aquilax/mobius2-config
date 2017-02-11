@@ -4,7 +4,7 @@ var parser = require('../');
 var sampleConfig = `Date format=[2];set date format,0:YYYY/MM/DD, 1:DD/MM/YYYY, 2:MM/DD/YYYY
 /**Note: "Date time" must be in accordance with the date format specified otherwise unable to set the date**/
 Date time=[02/10/2017-18:49:18];date time setting,yyyy/mm/dd-hh:mm:ss,dd/mm/yyyy-hh:mm:ss, mm/dd/yyyy-hh:mm:ss
-Modify datetime=[0];date time setting comfirm,0:not set 1: modify
+Modify datetime=[0];date time setting comfirm,0:not set, 1:modify
 
 Default Mode=[0];set power-on default mode,0:Video Mode 1, 1:Video Mode 2, 2:Photo Mode
 
@@ -84,29 +84,101 @@ rootfs version:1.10
 software version: 2.03
 `
 
-var sampleLine = 'Date format=[2];set date format,0:YYYY/MM/DD, 1:DD/MM/YYYY, 2:MM/DD/YYYY'
-var sampleLineObject = [
-  {
-    type: 'config',
-    name: 'Date format',
-    value: 2,
-    description: 'set date format',
-    options: {
-      0: 'YYYY/MM/DD',
-      1: 'DD/MM/YYYY',
-      2: 'MM/DD/YYYY'
-    }
-  }
-]
-
-describe('parseConfig', function(){
+describe('parse', function(){
   it('returns object', function() {
-    result = parser.parseConfig('');
+    result = parser.parse('');
     assert.isObject(result);
   });
   it('parses single line', function() {
-    result = parser.parseConfig(sampleLine);
+    var sampleLine = 'Date format=[2];set date format,0:YYYY/MM/DD, 1:DD/MM/YYYY, 2:MM/DD/YYYY';
+    var sampleLineObject = [
+      {
+        type: 'config',
+        name: 'Date format',
+        value: '2',
+        description: 'set date format',
+        options: [
+          {
+            id: '0',
+            value: 'YYYY/MM/DD'
+          }, {
+            id: '1',
+            value: 'DD/MM/YYYY'
+          }, {
+            id: '2',
+            value: 'MM/DD/YYYY'
+          }
+        ]
+      }
+    ];
+
+    result = parser.parse(sampleLine);
     assert.deepEqual(result, sampleLineObject)
   });
 
+  it('parses first paragraph', function() {
+    var sampleParagraph = `Date format=[2];set date format,0:YYYY/MM/DD, 1:DD/MM/YYYY, 2:MM/DD/YYYY
+/**Note: "Date time" must be in accordance with the date format specified otherwise unable to set the date**/
+Date time=[02/10/2017-18:49:18];date time setting,yyyy/mm/dd-hh:mm:ss,dd/mm/yyyy-hh:mm:ss, mm/dd/yyyy-hh:mm:ss
+Modify datetime=[0];date time setting comfirm,0:not set, 1:modify
+
+`
+    var sampleParagraphObject = [
+      {
+        type: 'config',
+        name: 'Date format',
+        value: '2',
+        description: 'set date format',
+        options: [
+          {
+            id: '0',
+            value: 'YYYY/MM/DD'
+          }, {
+            id: '1',
+            value: 'DD/MM/YYYY'
+          }, {
+            id: '2',
+            value: 'MM/DD/YYYY'
+          }
+        ]
+      }, {
+        type: 'comment',
+        value: 'Note: "Date time" must be in accordance with the date format specified otherwise unable to set the date',
+      }, {
+        type: 'config',
+        name: 'Date time',
+        value: '02/10/2017-18:49:18',
+        description: 'date time setting',
+        options: [
+          {
+            value: 'yyyy/mm/dd-hh:mm:ss',
+          }, {
+            value: 'dd/mm/yyyy-hh:mm:ss',
+          }, {
+            value: 'mm/dd/yyyy-hh:mm:ss',
+          }
+        ]
+      }, {
+        type: 'config',
+        name: 'Modify datetime',
+        value: '0',
+        description: 'date time setting comfirm',
+        options: [
+          {
+            id: '0',
+            value: 'not set'
+          }, {
+            id: '1',
+            value: 'modify'
+          }
+        ]
+      }, {
+        type: 'line'
+      }
+    ];
+    result = parser.parse(sampleParagraph);
+    for(var i = 0; i < sampleParagraphObject.length; i++) {
+      assert.deepEqual(result[i], sampleParagraphObject[i]);
+    }
+  });
 });
